@@ -24,6 +24,9 @@ function getRecipesFromStorage() {
 	// A9. TODO - Complete the functionality as described in this function
 	//           header. It is possible in only a single line, but should
 	//           be no more than a few lines.
+	let result = [];
+	result = JSON.parse(localStorage.getItem('recipes'));
+	return result;
 }
 
 /**
@@ -39,6 +42,17 @@ function addRecipesToDocument(recipes) {
 	//            create a <recipe-card> element for each one, and populate
 	//            each <recipe-card> with that recipe data using element.data = ...
 	//            Append each element to <main>
+	let main = document.getElementsByTagName('main')[0];
+	let recipeArray = getRecipesFromStorage();
+	if(recipeArray == null){
+		return;
+	}
+	for(let i = 0; i < recipeArray.length; i++){
+		let currRecipe = recipeArray[i];
+		let recipeCard = document.createElement('recipe-card');
+		recipeCard.data = currRecipe;
+		main.appendChild(recipeCard);
+	}
 }
 
 /**
@@ -51,6 +65,8 @@ function saveRecipesToStorage(recipes) {
 	// B1. TODO - Complete the functionality as described in this function
 	//            header. It is possible in only a single line, but should
 	//            be no more than a few lines.
+	return JSON.stringify(recipes);
+
 }
 
 /**
@@ -76,4 +92,34 @@ function initFormHandler() {
 	// Steps B12 & B13 will occur inside the event listener from step B11
 	// B12. TODO - Clear the local storage
 	// B13. TODO - Delete the contents of <main>
+	let formElem = document.getElementsByTagName("form")[0];
+	let submitButton = formElem.querySelector('button[type="submit"]');
+	submitButton.addEventListener("click", () => {
+		const formData = new FormData(formElem);
+		let recipeObj = {};
+		for(let[key, val] of formData.entries()){
+			recipeObj[key] = val;
+		}
+		console.log("-----recipe obj------")
+		console.log(recipeObj)
+
+		let recipeCard = document.createElement('recipe-card');
+		console.log("-----recipe-card------")
+		console.log(recipeCard)
+		recipeCard.data = recipeObj;
+		let m = document.querySelector('main');
+		m.appendChild(recipeCard);
+		let recipeArray = getRecipesFromStorage();
+		if(recipeArray == null){
+			recipeArray = [];
+		}
+		recipeArray.push(recipeObj);
+		localStorage.setItem('recipes', JSON.stringify(recipeArray));
+	});
+	let deleteStorage = formElem.querySelector('button[type="button"]');
+	deleteStorage.addEventListener("click", () => {
+		localStorage.clear();
+		let m = document.querySelector('main');
+		m.innerHTML = ``;
+	});
 }
